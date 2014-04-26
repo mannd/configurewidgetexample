@@ -26,9 +26,6 @@
         </receiver>
 
         <activity android:name="org.epstudios.configurewidgetexample.Configure" >
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
-            </intent-filter>
         </activity>
 
         <service android:name="org.epstudios.configurewidgetexample.ClockService" >

@@ -1,64 +1,120 @@
 package org.epstudios.configurewidgetexample;
 
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.os.Build;
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
-public class MainActivity extends ActionBarActivity {
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.appwidget.AppWidgetManager;
+import android.appwidget.AppWidgetProvider;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.SystemClock;
+import android.util.Log;
+import android.widget.RemoteViews;
+
+public class MainActivity extends AppWidgetProvider {
+	private static final String LOG_TAG = "CW_EX";
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-
-		if (savedInstanceState == null) {
-			getSupportFragmentManager().beginTransaction()
-					.add(R.id.container, new PlaceholderFragment()).commit();
-		}
+	public void onEnabled(Context context) {
+		super.onEnabled(context);
+		Log.d(LOG_TAG, "onEnabled");
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
+	public void onReceive(Context context, Intent intent) {
+		super.onReceive(context, intent);
+		Log.d(LOG_TAG, "onReceive");
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
+	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
+			int[] appWidgetIds) {
+		Log.d(LOG_TAG, "onUpdate");
+		for (int appWidgetId : appWidgetIds) {
+			// onUpdate is only called when the widget starts, since update
+			// interval is set to 0.
+			// Our Configure activity also calls it when its OK button is
+			// touched.
+			// We'll start the alarm service to update the Service once a sec
+			setAlarm(context, appWidgetId, 1000); // 1000 msec = 1 update/sec
+			Log.d(LOG_TAG, "Alarm started");
+
+			RemoteViews views = new RemoteViews(context.getPackageName(),
+					R.layout.activity_main);
+			// we'll set up a PendingIntent to open the Configure activity
+			// when our button is touched.
+			Intent intent = new Intent(context, Configure.class);
+			intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+			PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
+					intent, PendingIntent.FLAG_UPDATE_CURRENT);
+			views.setOnClickPendingIntent(R.id.update_button, pendingIntent);
+
+			// Now we'll update the time
+			Format formatter = new SimpleDateFormat(
+					"EEEE, MMMM d yyyy\nhh:mm:ss a z", Locale.getDefault());
+			String currentTime = formatter.format(new Date());
+			views.setTextViewText(R.id.time_label, currentTime);
+			// And the label
+			String label = Configure.loadUserName(context, appWidgetId);
+			if (label != null) {
+				views.setTextViewText(R.id.user_name_label, label);
+			}
+			appWidgetManager.updateAppWidget(appWidgetId, views);
 		}
-		return super.onOptionsItemSelected(item);
+		super.onUpdate(context, appWidgetManager, appWidgetIds);
 	}
 
-	/**
-	 * A placeholder fragment containing a simple view.
-	 */
-	public static class PlaceholderFragment extends Fragment {
-
-		public PlaceholderFragment() {
+	public static void setAlarm(Context context, int appWidgetId, int updateRate) {
+		PendingIntent newPending = makeControlPendingIntent(context,
+				ClockService.UPDATE, appWidgetId);
+		AlarmManager alarms = (AlarmManager) context
+				.getSystemService(Context.ALARM_SERVICE);
+		if (updateRate >= 0) {
+			alarms.setRepeating(AlarmManager.ELAPSED_REALTIME,
+					SystemClock.elapsedRealtime(), updateRate, newPending);
+		} else {
+			// on a negative updateRate stop the refreshing
+			alarms.cancel(newPending);
+			Log.d(LOG_TAG, "Alarm stopped");
 		}
+	}
 
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_main, container,
-					false);
-			return rootView;
+	public static PendingIntent makeControlPendingIntent(Context context,
+			String command, int appWidgetId) {
+		Intent active = new Intent(context, ClockService.class);
+		active.setAction(command);
+		active.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+		// this Uri data is to make the PendingIntent unique, so it wont be
+		// updated by FLAG_UPDATE_CURRENT
+		// so if there are multiple widget instances they wont override each
+		// other
+		Uri data = Uri.withAppendedPath(
+				Uri.parse("cwwidget://widget/id/#" + command + appWidgetId),
+				String.valueOf(appWidgetId));
+		active.setData(data);
+		return (PendingIntent.getService(context, 0, active,
+				PendingIntent.FLAG_UPDATE_CURRENT));
+	}
+
+	@Override
+	public void onDisabled(Context context) {
+		Log.d(LOG_TAG, "onDisabled");
+		context.stopService(new Intent(context, ClockService.class));
+		super.onDisabled(context);
+	}
+
+	@Override
+	public void onDeleted(Context context, int[] appWidgetIds) {
+		Log.d(LOG_TAG, "onDeleted");
+		for (int appWidgetId : appWidgetIds) {
+			setAlarm(context, appWidgetId, -1);
 		}
+		super.onDeleted(context, appWidgetIds);
 	}
 
 }
