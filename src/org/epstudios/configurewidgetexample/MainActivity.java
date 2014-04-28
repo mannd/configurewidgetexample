@@ -41,7 +41,7 @@ public class MainActivity extends AppWidgetProvider {
 			// Our Configure activity also calls it when its OK button is
 			// touched.
 			// We'll start the alarm service to update the Service once a sec
-			setAlarm(context, appWidgetId, 1000); // 1000 msec = 1 update/sec
+			setAlarm(context, appWidgetId, 1000); // 1000 msec = 1 sec
 			Log.d(LOG_TAG, "Alarm started");
 
 			RemoteViews views = new RemoteViews(context.getPackageName(),
@@ -54,15 +54,16 @@ public class MainActivity extends AppWidgetProvider {
 					intent, PendingIntent.FLAG_UPDATE_CURRENT);
 			views.setOnClickPendingIntent(R.id.update_button, pendingIntent);
 
-			// Now we'll update the time
+			// Now we'll update the time, but all future updates will be by our
+			// ClockService
 			Format formatter = new SimpleDateFormat(
 					"EEEE, MMMM d yyyy\nhh:mm:ss a z", Locale.getDefault());
 			String currentTime = formatter.format(new Date());
 			views.setTextViewText(R.id.time_label, currentTime);
 			// And the label
-			String label = Configure.loadUserName(context, appWidgetId);
-			if (label != null) {
-				views.setTextViewText(R.id.user_name_label, label);
+			String userName = Configure.loadUserName(context, appWidgetId);
+			if (userName != null) {
+				views.setTextViewText(R.id.user_name_label, userName);
 			}
 			appWidgetManager.updateAppWidget(appWidgetId, views);
 		}
@@ -78,7 +79,7 @@ public class MainActivity extends AppWidgetProvider {
 			alarms.setRepeating(AlarmManager.ELAPSED_REALTIME,
 					SystemClock.elapsedRealtime(), updateRate, newPending);
 		} else {
-			// on a negative updateRate stop the refreshing
+			// on a negative updateRate stop the alarm
 			alarms.cancel(newPending);
 			Log.d(LOG_TAG, "Alarm stopped");
 		}
@@ -89,13 +90,11 @@ public class MainActivity extends AppWidgetProvider {
 		Intent active = new Intent(context, ClockService.class);
 		active.setAction(command);
 		active.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-		// this Uri data is to make the PendingIntent unique, so it wont be
-		// updated by FLAG_UPDATE_CURRENT
-		// so if there are multiple widget instances they wont override each
-		// other
-		Uri data = Uri.withAppendedPath(
-				Uri.parse("cwwidget://widget/id/#" + command + appWidgetId),
-				String.valueOf(appWidgetId));
+		// The Uri data is to make the PendingIntent unique
+		Uri data = Uri
+				.withAppendedPath(
+						Uri.parse("configwidget://widget/id/#" + command
+								+ appWidgetId), String.valueOf(appWidgetId));
 		active.setData(data);
 		return (PendingIntent.getService(context, 0, active,
 				PendingIntent.FLAG_UPDATE_CURRENT));
@@ -111,6 +110,7 @@ public class MainActivity extends AppWidgetProvider {
 	@Override
 	public void onDeleted(Context context, int[] appWidgetIds) {
 		Log.d(LOG_TAG, "onDeleted");
+		// Stop the Alarm when the widget is deleted.
 		for (int appWidgetId : appWidgetIds) {
 			setAlarm(context, appWidgetId, -1);
 		}

@@ -29,12 +29,13 @@ public class ClockService extends Service {
 		String currentTime = formatter.format(new Date());
 		views.setTextViewText(R.id.time_label, currentTime);
 
-		// Without the code below, the widget loses its User Name
-		// label text and Update button stops working
+		// Try the app first with the code below commented out.
+		// Remove comments below to fix widget
 
-		// String label = Configure.loadUserName(context, appWidgetId);
-		// if (label != null) {
-		// views.setTextViewText(R.id.user_name_label, label);
+		// Configure.loadUserName(context, appWidgetId);
+		// String userName = Configure.loadUserName(context, appWidgetId);
+		// if (userName != null) {
+		// views.setTextViewText(R.id.user_name_label, userName);
 		// }
 		// Intent configureIntent = new Intent(context, Configure.class);
 		// configureIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
@@ -45,7 +46,6 @@ public class ClockService extends Service {
 
 		appWidgetManager.updateAppWidget(appWidgetId, views);
 		return START_STICKY;
-
 	}
 
 	@Override

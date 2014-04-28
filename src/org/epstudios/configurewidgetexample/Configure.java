@@ -22,30 +22,34 @@ public class Configure extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		// Get the appWidgetId of the calling appWidget
 		// stored in the extras bundle.
 		Intent launchIntent = getIntent();
 		Bundle extras = launchIntent.getExtras();
 		appWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID,
 				AppWidgetManager.INVALID_APPWIDGET_ID);
-
+		// Set our layout for the Configure Activity
 		setContentView(R.layout.configure);
+		// Since an Activity is a Context, can use it as the context
 		final Context context = Configure.this;
 
-		// We'll have a User Name that can be configured in our widget
+		// We'll have a user name that can be configured in our widget
 		labelEditText = (EditText) findViewById(R.id.user_name);
 		String userName = loadUserName(context, appWidgetId);
 		if (userName != null) {
 			labelEditText.setText(userName);
 		}
-		// We have one button to update the User Name
+		// We'll just have an OK button, user can cancel out
+		// by hitting device Back button.
 		Button ok = (Button) findViewById(R.id.ok_button);
 		ok.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				saveUserName(context, appWidgetId, labelEditText.getText()
 						.toString());
-				// we need to broadcast an APPWIDGET_UPDATE to our appWidget
+				// We need to broadcast an APPWIDGET_UPDATE to our appWidget
+				// so it will update the user name TextView.
 				AppWidgetManager appWidgetManager = AppWidgetManager
 						.getInstance(context);
 				ComponentName thisAppWidget = new ComponentName(context
@@ -58,12 +62,15 @@ public class Configure extends Activity {
 				updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,
 						appWidgetIds);
 				context.sendBroadcast(updateIntent);
+				// Done with Configure, finish Activity.
 				finish();
 			}
 		});
 
 	}
 
+	// We use SharedPreferences to store the user name. The methods
+	// are static so they can be called from the MainActivity too.
 	static void saveUserName(Context context, int appWidgetId, String userName) {
 		SharedPreferences.Editor prefs = context.getSharedPreferences(
 				PREFS_NAME, 0).edit();
