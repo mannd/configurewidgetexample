@@ -32,7 +32,6 @@ public class ClockService extends Service {
 		// Try the app first with the code below commented out.
 		// Remove comments below to fix widget
 
-		// Configure.loadUserName(context, appWidgetId);
 		// String userName = Configure.loadUserName(context, appWidgetId);
 		// if (userName != null) {
 		// views.setTextViewText(R.id.user_name_label, userName);
