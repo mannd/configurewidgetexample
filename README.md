@@ -1,11 +1,12 @@
 ## Description
 This is an example widget that demonstrates how to write an Android widget that can be reconfigured on the fly by touching a button.  This also demonstrates how the button can continue to work despite the widget being constantly updated by a service.
 
-## Installation Import the project into Eclipse.  The project requires
+## Installation
+Import the project into Eclipse.  The project requires
 the appcompat library version 7.  The instructions on how to download
 and install this library, as well as how to include the library in the
 project are contained in the answer to this [StackOverflow
-question.](http://stackoverflow.com/questions/21059612/no-resource-found-that-matches-the-given-name-style-theme-appcompat-light)
+question](http://stackoverflow.com/questions/21059612/no-resource-found-that-matches-the-given-name-style-theme-appcompat-light).
 
 
 ## License and Copyright
