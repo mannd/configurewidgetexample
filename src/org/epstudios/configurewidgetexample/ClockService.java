@@ -29,6 +29,7 @@ public class ClockService extends Service {
 		String currentTime = formatter.format(new Date());
 		views.setTextViewText(R.id.time_label, currentTime);
 
+		// ----------------------------------------------------
 		// Try the app first with the code below commented out.
 		// Remove comments below to fix widget
 
@@ -44,6 +45,14 @@ public class ClockService extends Service {
 		// views.setOnClickPendingIntent(R.id.update_button, pendingIntent);
 
 		appWidgetManager.updateAppWidget(appWidgetId, views);
+		// ----------------------------------------------------
+
+		// For Android version 11 and above, one can use
+		// partiallUpdateAppWidget to just update the views that have changed.
+		// To try this, comment out all the code between the horizontal lines
+		// above, and uncomment the line below
+		// appWidgetManager.partiallyUpdateAppWidget(appWidgetId, views);
+
 		return START_STICKY;
 	}
 
