@@ -25,3 +25,6 @@ local.properties
 # eclipse
 .classpath
 .settings/
+
+# Mac OS files
+.DS_Store
