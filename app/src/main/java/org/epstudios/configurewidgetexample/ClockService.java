@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import android.app.PendingIntent;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
@@ -33,16 +34,16 @@ public class ClockService extends Service {
 		// Try the app first with the code below commented out.
 		// Remove comments below to fix widget
 
-		// String userName = Configure.loadUserName(context, appWidgetId);
-		// if (userName != null) {
-		// views.setTextViewText(R.id.user_name_label, userName);
-		// }
-		// Intent configureIntent = new Intent(context, Configure.class);
-		// configureIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
-		// appWidgetId);
-		// PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
-		// configureIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-		// views.setOnClickPendingIntent(R.id.update_button, pendingIntent);
+//		 String userName = Configure.loadUserName(context, appWidgetId);
+//		 if (userName != null) {
+//		 views.setTextViewText(R.id.user_name_label, userName);
+//		 }
+//		 Intent configureIntent = new Intent(context, Configure.class);
+//		 configureIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
+//		 appWidgetId);
+//		 PendingIntent pendingIntent = PendingIntent.getActivity(context, appWidgetId,
+//		 configureIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+//		 views.setOnClickPendingIntent(R.id.update_button, pendingIntent);
 
 		appWidgetManager.updateAppWidget(appWidgetId, views);
 		// ----------------------------------------------------
@@ -51,7 +52,7 @@ public class ClockService extends Service {
 		// partiallUpdateAppWidget to just update the views that have changed.
 		// To try this, comment out all the code between the horizontal lines
 		// above, and uncomment the line below
-		// appWidgetManager.partiallyUpdateAppWidget(appWidgetId, views);
+//		 appWidgetManager.partiallyUpdateAppWidget(appWidgetId, views);
 
 		return START_STICKY;
 	}
