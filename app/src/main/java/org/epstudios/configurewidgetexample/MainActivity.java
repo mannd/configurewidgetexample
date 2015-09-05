@@ -50,7 +50,7 @@ public class MainActivity extends AppWidgetProvider {
 			// when our button is touched.
 			Intent intent = new Intent(context, Configure.class);
 			intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-			PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
+			PendingIntent pendingIntent = PendingIntent.getActivity(context, appWidgetId,
 					intent, PendingIntent.FLAG_UPDATE_CURRENT);
 			views.setOnClickPendingIntent(R.id.update_button, pendingIntent);
 

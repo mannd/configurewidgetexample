@@ -7,12 +7,12 @@ android {
     defaultConfig {
         applicationId "org.epstudios.configurewidgetexample"
         minSdkVersion 11
-        targetSdkVersion 20
+        targetSdkVersion 19
     }
 
     buildTypes {
         release {
-            runProguard false
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
