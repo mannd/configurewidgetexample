@@ -1,11 +1,13 @@
 ## Description
-This is an example widget that demonstrates how to write an Android widget that can be reconfigured on the fly by touching a button.  This also demonstrates how the button can continue to work despite the widget being constantly updated by a service.
+This is an example widget that demonstrates how to write an Android widget that can be reconfigured on the fly by touching a button.  This also demonstrates how the button can continue to work despite the widget being constantly updated by a service.  See [this post](http://wp.me/p1qPOZ-mR) for a full description of this widget.
 
-## Installation 
-Import the project into Eclipse, build and run in the
-Android simulator or directly on your device.  With the simulator use
-Ctrl-F11 to simulate rotating the device. Note that the project no
-longer requires the appcompat version 7 library.  
+## Installation
+Open the project with Android Studio, build and run in
+the Android simulator or directly on your device.  Since this is a
+widget, use the *Do Not Launch Activity* option in your Run
+Configuration.  With the simulator use Ctrl-F11 to simulate rotating
+the device. Note that the project no longer requires the appcompat
+version 7 library.
 
 ## License and Copyright 
 This is free and unencumbered software released into the public domain.
